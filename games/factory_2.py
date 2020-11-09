@@ -32,10 +32,10 @@ class MuZeroConfig:
 
 
         ### Self-Play
-        self.num_workers = 1  # Number of simultaneous threads/workers self-playing to feed the replay buffer
+        self.num_workers = 10  # Number of simultaneous threads/workers self-playing to feed the replay buffer
         self.selfplay_on_gpu = False
-        self.max_moves = 50  # Maximum number of moves if game is not finished before
-        self.num_simulations = 30  # Number of future moves self-simulated
+        self.max_moves = 2500  # Maximum number of moves if game is not finished before
+        self.num_simulations = 100  # Number of future moves self-simulated
         self.discount = 0.99  # Chronological discount of the reward
         self.temperature_threshold = None  # Number of moves before dropping the temperature given by visit_softmax_temperature_fn to 0 (ie selecting the best action). If None, visit_softmax_temperature_fn is used every time
 
@@ -79,7 +79,7 @@ class MuZeroConfig:
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
         self.training_steps = 100000  # Total number of training steps (ie weights update according to a batch)
         self.batch_size = 32  # Number of parts of games to train on at each training step
-        self.checkpoint_interval = 500  # Number of training steps before using the model for self-playing
+        self.checkpoint_interval = 5000  # Number of training steps before using the model for self-playing
         self.value_loss_weight = 0.25  # Scale the value loss to avoid overfitting of the value function, paper recommends 0.25 (See paper appendix Reanalyze)
         self.train_on_gpu = True if torch.cuda.is_available() else False  # Train on GPU if available
 
@@ -97,7 +97,7 @@ class MuZeroConfig:
         ### Replay Buffer
         self.replay_buffer_size = 10000  # Number of self-play games to keep in the replay buffer
         self.num_unroll_steps = 10  # Number of game moves to keep for every batch element
-        self.td_steps = 50  # Number of steps in the future to take into account for calculating the target value
+        self.td_steps = 500  # Number of steps in the future to take into account for calculating the target value
         self.PER = True  # Prioritized Replay (See paper appendix Training), select in priority the elements in the replay buffer which are unexpected for the network
         self.PER_alpha = 1.  # How much prioritization is used, 0 corresponding to the uniform case, paper suggests 1
 
