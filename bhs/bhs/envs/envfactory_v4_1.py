@@ -4,7 +4,7 @@ Created on Wed May 29 09:37:43 2019
 
 @author: RTS
 """
-from Element import Element, Diverter, Merger, Toploader
+from .Element import Element, Diverter, Merger, Toploader
 import networkx as nx
 import numpy as np
 import scipy
