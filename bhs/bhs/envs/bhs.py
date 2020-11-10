@@ -267,7 +267,7 @@ class BHSEnv(gym.Env):
         deadlock_= False
         sp_diverters = self.findSPdiverters(load_based=False)
         action_=[]
-        if action:
+        if action is not []:
             action_ = np.array(list(format(action, '0'+str(len(self.diverters))+'b')), dtype=np.int) # convert from integer to binary array matching decisions at each diverter
             
         if shortestPath:
