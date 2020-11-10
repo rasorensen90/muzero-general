@@ -83,14 +83,14 @@ class MuZeroConfig:
         self.value_loss_weight = 0.25  # Scale the value loss to avoid overfitting of the value function, paper recommends 0.25 (See paper appendix Reanalyze)
         self.train_on_gpu = True if torch.cuda.is_available() else False  # Train on GPU if available
 
-        self.optimizer = "SGD"  # "Adam" or "SGD". Paper uses SGD
+        self.optimizer = "Adam"  # "Adam" or "SGD". Paper uses SGD
         self.weight_decay = int(1e-4)  # L2 weights regularization
         self.momentum = 0.9  # Used only if optimizer is SGD
 
         # Exponential learning rate schedule
-        self.lr_init = 0.05  # Initial learning rate
-        self.lr_decay_rate = 0.1  # Set it to 1 to use a constant learning rate
-        self.lr_decay_steps = int(35e3)
+        self.lr_init = 0.001  # Initial learning rate
+        self.lr_decay_rate = 0.99  # Set it to 1 to use a constant learning rate
+        self.lr_decay_steps = int(1e3)
 
 
 
