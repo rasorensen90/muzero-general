@@ -85,7 +85,7 @@ class BHSEnv(gym.Env):
     
     def setSpaces(self):
         # action space
-        a = np.ones(2**len(self.diverters),dtype=np.int32) # always two actions (This may change later)
+        a = 2**len(self.diverters) # always two actions (This may change later)
        
         self.action_space = spaces.Discrete(a)
         
