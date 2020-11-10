@@ -23,7 +23,7 @@ class BHSEnv(gym.Env):
         self.observation_space = []
         # self.numObsFeatures = 1
         self.stepnumber = 0
-        self.steplimit = 200
+        self.steplimit = 2000
         self.done = True
         self.default_rand = random.Random(0)
         self.rand_dst = random.Random(0)
