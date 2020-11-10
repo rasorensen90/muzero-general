@@ -46,7 +46,7 @@ class BHSEnv(gym.Env):
         
         self.setSpaces()
         self.shortestPathTable = self.calcShortestPathTable()
-        print("RL_DIVERTERS",self.rl_diverter_ids)
+        # print("RL_DIVERTERS",self.rl_diverter_ids)
         
     def updateObs(self): # onehot encoded
         self.obs = np.zeros(self.observation_space.shape)
