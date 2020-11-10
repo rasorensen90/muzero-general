@@ -175,7 +175,7 @@ class Game(AbstractGame):
             Initial observation of the game.
         """
         observation = self.env.reset()
-        observation = np.reshape(observation, (355,1,1))
+        observation = np.reshape(observation, (1,1,355))
         return observation
 
     def close(self):
