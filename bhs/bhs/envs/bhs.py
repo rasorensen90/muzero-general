@@ -278,14 +278,13 @@ class BHSEnv(gym.Env):
             for i in indexes:
                 action_[i] = action_sp[i]
         
-        print(action_)
+        
         e_ready = [e_ for e_ in self.elems if e_.tote is not None and not e_.tote.moved]
         e_old_1 = e_ready.copy()
         while e_ready != []:
             e_old_2 = e_ready.copy()
             for e in e_ready:
                 if e in self.diverters:
-                    print(self.diverters.index(e))
                     e.move(control=action_[self.diverters.index(e)])
                 else:
                     e.move(control=0)
