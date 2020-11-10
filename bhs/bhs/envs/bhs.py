@@ -14,33 +14,36 @@ from gym import spaces
 from SPGraph import SPGraph, dijsktra
 
 class Environment(gym.Env):
-    def __init__(self, args):
+    def __init__(self):
         
-        self.elems, self.dst, self.src, self.graph, self.GCNMat = globals()[args.envtype]()
+        self.elems, self.dst, self.src, self.graph, self.GCNMat = globals()["env_2_0"]()
         self.totes = []
         self.reward = 0
         self.action_space = []
         self.observation_space = []
         # self.numObsFeatures = 1
         self.stepnumber = 0
-        self.steplimit = args.steplimit
+        self.steplimit = 200
         self.done = True
         self.default_rand = random.Random(0)
         self.rand_dst = random.Random(0)
         self.rand_src = random.Random(0)
         self.rand_numtotes = random.Random(0)
-        self.randomize_numtotes = args.randomize_numtotes
-        self.numtotes = args.numtotes
+        self.randomize_numtotes = False#args.randomize_numtotes
+        self.numtotes = 30#args.numtotes
         self.congestion = False
         self.congestion_counter = 0
         self.tote_info = {}
         self.deadlock = False
         self.diverters = [e for e in self.elems if isinstance(e, Diverter)]
         self.seed_ = None
-        if args.RL_diverters is not None:
-            self.rl_diverter_ids = list(map(int,args.RL_diverters))
-        else:
-            self.rl_diverter_ids = [e.ID for e in self.diverters]
+        
+        # if args.RL_diverters is not None:
+        #     self.rl_diverter_ids = list(map(int,args.RL_diverters))
+        # else:
+        #     self.rl_diverter_ids = [e.ID for e in self.diverters]
+        self.rl_diverter_ids = [e.ID for e in self.diverters]
+        
         self.setSpaces()
         self.shortestPathTable = self.calcShortestPathTable()
         print("RL_DIVERTERS",self.rl_diverter_ids)
@@ -82,9 +85,9 @@ class Environment(gym.Env):
     
     def setSpaces(self):
         # action space
-        a = np.ones(len([e for e in self.elems if isinstance(e, Diverter)]),dtype=np.int32)*2 # always two actions (This may change later)
+        a = np.ones(2**len(self.diverters),dtype=np.int32) # always two actions (This may change later)
        
-        self.action_space = spaces.MultiDiscrete(a)
+        self.action_space = spaces.Discrete(a)
         
         # observation space
         obs_shape = (len(self.elems), len(self.src+self.dst))
@@ -257,12 +260,15 @@ class Environment(gym.Env):
         
         return sp_diverters
     
+    
     def step(self,action=[], shortestPath=False, dynamic=False, dla=False, maxCongestion=1.0): 
         reward = 0
         self.deadlock = False
         deadlock_= False
         sp_diverters = self.findSPdiverters(load_based=False)
-        action_ = action.copy()
+        if action:
+            action_ = format(action, '0'+str(len(self.diverters))+'b') # convert from integer to binary array matching decisions at each diverter
+            
         if shortestPath:
             action_ = self.calcShortestPath(dynamic=dynamic, dla=dla, maxCongestion=maxCongestion)
         elif self.rl_diverter_ids != None and sp_diverters != []:
@@ -313,7 +319,7 @@ class Environment(gym.Env):
         self.stepnumber += 1
         if (self.stepnumber >= self.steplimit):
             self.done = True
-        return self.obs, reward, self.done, tote_info, action_
+        return self.obs, reward, self.done, tote_info#, action_
 
     def render(self, mode='human', close=False):
         pass
