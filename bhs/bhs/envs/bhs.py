@@ -13,7 +13,7 @@ import gym
 from gym import spaces
 from .SPGraph import SPGraph, dijsktra
 
-class Environment(gym.Env):
+class BHSEnv(gym.Env):
     def __init__(self):
         
         self.elems, self.dst, self.src, self.graph, self.GCNMat = globals()["env_2_0"]()
