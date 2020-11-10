@@ -285,6 +285,7 @@ class BHSEnv(gym.Env):
             e_old_2 = e_ready.copy()
             for e in e_ready:
                 if e in self.diverters:
+                    print(self.diverters.index(e))
                     e.move(control=action_[self.diverters.index(e)])
                 else:
                     e.move(control=0)
