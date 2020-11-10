@@ -128,4 +128,3 @@ class FactoryEnv(gym.Env):
     
     def close(self):
         pass
-f= FactoryEnv()
