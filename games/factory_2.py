@@ -3,7 +3,7 @@ import os
 
 import gym
 import factory
-import numpy
+import numpy as np
 import torch
 
 from .abstract_game import AbstractGame
@@ -150,7 +150,7 @@ class Game(AbstractGame):
             The new observation, the reward and a boolean if the game has ended.
         """
         observation, reward, done, _ = self.env.step(action)
-        return numpy.array([[observation]]), reward, done
+        return np.array([[observation]]), reward, done
 
     def legal_actions(self):
         """
@@ -175,7 +175,7 @@ class Game(AbstractGame):
         Returns:
             Initial observation of the game.
         """
-        return numpy.array([[self.env.reset()]])
+        return np.array([[self.env.reset()]])
 
     def close(self):
         """
