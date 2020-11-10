@@ -280,10 +280,11 @@ def env_2_0(): #101 elements
     
     
     GCNMat = createGCNMat(graph)
-    [print(e.ID, e.__class__.__name__) for e in elements]
+    # [print(e.ID, e.__class__.__name__) for e in elements]
 #    nx.draw_spectral(graph)
 #    plt.show()
-    print('Number of elements in environment: ', len(elements))
+    # print('Number of elements in environment: ', len(elements))
+
     return elements, dst, src, graph, GCNMat
 
 def env_3_0(): #265 elements
