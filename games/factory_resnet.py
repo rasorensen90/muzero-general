@@ -3,7 +3,7 @@ import os
 
 import gym
 import factory
-import numpy
+import numpy as np
 import torch
 
 from .abstract_game import AbstractGame
