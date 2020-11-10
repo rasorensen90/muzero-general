@@ -1,13 +1,13 @@
-import torch
 import datetime
 import os
 
 import gym
 import factory
 import numpy
-
+import torch
 
 from .abstract_game import AbstractGame
+
 
 
 class MuZeroConfig:
@@ -15,7 +15,7 @@ class MuZeroConfig:
         # More information is available here: https://github.com/werner-duvaud/muzero-general/wiki/Hyperparameter-Optimization
 
         self.seed = 0  # Seed for numpy, torch and the game
-        self.max_num_gpus = 1  # Fix the maximum number of GPUs to use. It's usually faster to use a single GPU (set it to 1) if it has enough memory. None will use every GPUs available
+        self.max_num_gpus = None  # Fix the maximum number of GPUs to use. It's usually faster to use a single GPU (set it to 1) if it has enough memory. None will use every GPUs available
 
 
 
@@ -188,7 +188,7 @@ class Game(AbstractGame):
         Display the game observation.
         """
         self.env.render()
-        input("Press enter to take a step ")
+        #input("Press enter to take a step ")
 
     # def action_to_string(self, action_number):
     #    """
