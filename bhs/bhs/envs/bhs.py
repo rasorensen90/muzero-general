@@ -6,12 +6,12 @@ Created on Wed May 29 09:37:43 2019
 """
 import random
 import numpy as np
-from envfactory_v4_1 import env_0_0, env_1_0, env_2_0, env_3_0
-from Element import Element, Diverter, Merger, Toploader
-from Tote import Tote
+from .envfactory_v4_1 import env_0_0, env_1_0, env_2_0, env_3_0
+from .Element import Element, Diverter, Merger, Toploader
+from .Tote import Tote
 import gym
 from gym import spaces
-from SPGraph import SPGraph, dijsktra
+from .SPGraph import SPGraph, dijsktra
 
 class Environment(gym.Env):
     def __init__(self):
