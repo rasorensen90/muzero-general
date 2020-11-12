@@ -23,7 +23,7 @@ class MuZeroConfig:
         self.observation_shape = (1, 1, 355)  # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
         self.action_space = list(range(180))  # Fixed list of all possible actions. You should only edit the length
         self.players = list(range(1))  # List of players. You should only edit the length
-        self.stacked_observations = 32  # Number of previous observations and previous actions to add to the current observation
+        self.stacked_observations = 0  # Number of previous observations and previous actions to add to the current observation
 
         # Evaluate
         self.muzero_player = 0  # Turn Muzero begins to play (0: MuZero plays first, 1: MuZero plays second)
@@ -79,7 +79,7 @@ class MuZeroConfig:
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
         self.training_steps = 100000  # Total number of training steps (ie weights update according to a batch)
         self.batch_size = 32  # Number of parts of games to train on at each training step
-        self.checkpoint_interval = int(1e3)  # Number of training steps before using the model for self-playing
+        self.checkpoint_interval = int(1e4)  # Number of training steps before using the model for self-playing
         self.value_loss_weight = 0.25  # Scale the value loss to avoid overfitting of the value function, paper recommends 0.25 (See paper appendix Reanalyze)
         self.train_on_gpu = True if torch.cuda.is_available() else False  # Train on GPU if available
 
@@ -95,7 +95,7 @@ class MuZeroConfig:
 
 
         ### Replay Buffer
-        self.replay_buffer_size = int(1e4)  # Number of self-play games to keep in the replay buffer
+        self.replay_buffer_size = int(1e3)  # Number of self-play games to keep in the replay buffer
         self.num_unroll_steps = 20  # Number of game moves to keep for every batch element
         self.td_steps = 500  # Number of steps in the future to take into account for calculating the target value
         self.PER = True  # Prioritized Replay (See paper appendix Training), select in priority the elements in the replay buffer which are unexpected for the network
