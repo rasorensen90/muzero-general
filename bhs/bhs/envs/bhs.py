@@ -23,7 +23,7 @@ class BHSEnv(gym.Env):
         self.observation_space = []
         # self.numObsFeatures = 1
         self.stepnumber = 0
-        self.steplimit = 2000
+        self.steplimit = 200
         self.done = True
         self.default_rand = random.Random(0)
         self.rand_dst = random.Random(0)
@@ -204,7 +204,7 @@ class BHSEnv(gym.Env):
                 action.append(int(e.forced_control))
         return(action)
         
-    def reset(self, total=True, seed=None, numtotes=None):
+    def reset(self, total=False, seed=None, numtotes=None):
         if numtotes is not None:
             self.numtotes=numtotes
         if seed is None:
