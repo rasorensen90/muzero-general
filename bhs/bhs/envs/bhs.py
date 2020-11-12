@@ -334,4 +334,4 @@ class BHSEnv(gym.Env):
         return state
 
     def close(self):
-        del self.env
+        self = None
