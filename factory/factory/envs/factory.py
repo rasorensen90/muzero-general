@@ -155,6 +155,6 @@ class FactoryEnv(gym.Env):
         df = df.transpose()
         df.to_csv('data/util_seed_'+str(self.seed_)+'.csv')
         
-        np.savetxt('data/lateness_seed_'+str(self.seed_)+'.csv', np.array(my_sim.lateness), delimiter=',')
+        np.savetxt('data/lateness_seed_'+str(self.seed_)+'.csv', np.array(self.my_sim.lateness), delimiter=',')
         
         self = None
