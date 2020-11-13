@@ -5,6 +5,8 @@ import gym
 import factory
 import numpy as np
 import torch
+import pandas as pd
+import csv
 
 from .abstract_game import AbstractGame
 
@@ -181,6 +183,33 @@ class Game(AbstractGame):
         """
         Properly close the game.
         """
+        # utilization
+        operational_times = {mach: mach.total_operational_time for mach in self.env.my_sim.machines_list}
+        mach_util = {mach: operational_times[mach]/self.env.sim_time for mach in self.env.my_sim.machines_list}
+        mean_util = {station: round(np.mean([mach_util[mach] for mach in self.env.my_sim.machines_list if mach.station == station]), 3)
+                     for station in self.env.my_sim.stations}
+        parts_per_station = {station: sum([mach.parts_made for mach in self.env.my_sim.machines_list if mach.station == station]) for
+                     station in self.env.my_sim.stations}
+
+        station_wait_times = {station: np.mean(sum([self.env.my_sim.ht_seq_wait[(ht, seq)] for ht, seq in self.env.my_sim.station_HT_seq[station]], [])) for
+                              station in self.env.my_sim.stations}
+        inter_arrival_times = {station: [t_i_plus_1 - t_i for t_i, t_i_plus_1 in zip(self.env.my_sim.arrival_times[station],
+                                                    self.env.my_sim.arrival_times[station][1:])] for station in self.env.my_sim.stations}
+        mean_inter = {station: round(np.mean(inter_ar_ts), 3) for station, inter_ar_ts in inter_arrival_times.items()}
+        std_inter = {station: round(np.std(inter_ar_ts), 3) for station, inter_ar_ts in inter_arrival_times.items()}
+        coeff_var = {station: round(std_inter[station]/mean_inter[station], 3) for station in self.env.my_sim.stations}
+        machines_per_station = {station: len([mach for mach in self.env.my_sim.machines_list if mach.station == station]) for station in
+                                self.env.my_sim.stations}
+        
+        print(np.mean(self.env.my_sim.lateness[-10000:]))
+        
+        cols = [mean_util, mean_inter, std_inter, coeff_var, machines_per_station, station_wait_times]
+        df = pd.DataFrame(cols, index=['mean_utilization', 'mean_interarrival_time', 'standard_dev_interarrival',
+                          'coefficient_of_var_interarrival', 'machines_per_station', 'mean_wait_time'])
+        df = df.transpose()
+        df.to_csv('data/util_seed_'+str(self.env.seed_)+'.csv')
+        
+        np.savetxt('data/lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
         self.env.close()
 
     def render(self):
