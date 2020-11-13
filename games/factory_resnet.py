@@ -114,6 +114,7 @@ class MuZeroConfig:
         self.training_delay = 0  # Number of seconds to wait after each training step
         self.ratio = None  # Desired training steps per self played step ratio. Equivalent to a synchronous version, training can take much longer. Set it to None to disable it
 
+        print(os.path.join([self.results_path,'data'])+'util_seed_'+str(self.env.seed_)+'.csv')
 
     def visit_softmax_temperature_fn(self, trained_steps):
         """
@@ -140,7 +141,7 @@ class Game(AbstractGame):
         self.env = gym.make("factory-v0")
         if seed is not None:
             self.env.seed(seed)
-        print(os.path.join([self.results_path,'data'])+'util_seed_'+str(self.env.seed_)+'.csv')
+        
 
     def step(self, action):
         """
