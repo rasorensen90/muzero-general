@@ -140,7 +140,7 @@ class Game(AbstractGame):
         self.env = gym.make("factory-v0")
         if seed is not None:
             self.env.seed(seed)
-        print(os.path.join([RESULTS_PATH,'data'])+'util_seed_'+str(self.env.seed_)+'.csv')
+        print(os.path.join(RESULTS_PATH,'data')+'util_seed_'+str(self.env.seed_)+'.csv')
         
     def step(self, action):
         """
