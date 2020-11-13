@@ -140,7 +140,7 @@ class Game(AbstractGame):
         self.env = gym.make("factory-v0")
         if seed is not None:
             self.env.seed(seed)
-        print(os.path.join(RESULTS_PATH,'data')+'util_seed_'+str(self.env.seed_)+'.csv')
+        
         
     def step(self, action):
         """
@@ -210,9 +210,9 @@ class Game(AbstractGame):
                           'coefficient_of_var_interarrival', 'machines_per_station', 'mean_wait_time'])
         df = df.transpose()
         
-        df.to_csv(os.path.join([RESULTS_PATH,'data'])+'util_seed_'+str(self.env.seed_)+'.csv')
+        df.to_csv(os.path.join(RESULTS_PATH,'data/')+'util_seed_'+str(self.env.seed_)+'.csv')
         
-        np.savetxt('data/lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
+        np.savetxt(os.path.join(RESULTS_PATH,'data/')+'lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
         self.env.close()
 
     def render(self):
