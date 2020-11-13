@@ -11,6 +11,7 @@ import csv
 from .abstract_game import AbstractGame
 
 
+RESULTS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results", os.path.basename(__file__)[:-3], datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S")) 
 
 class MuZeroConfig:
     def __init__(self):
@@ -77,7 +78,7 @@ class MuZeroConfig:
 
 
         ### Training
-        self.results_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results", os.path.basename(__file__)[:-3], datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))  # Path to store the model weights and TensorBoard logs
+        self.results_path = RESULTS_PATH # Path to store the model weights and TensorBoard logs
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
         self.training_steps = 100000  # Total number of training steps (ie weights update according to a batch)
         self.batch_size = 32  # Number of parts of games to train on at each training step
@@ -114,8 +115,6 @@ class MuZeroConfig:
         self.training_delay = 0  # Number of seconds to wait after each training step
         self.ratio = None  # Desired training steps per self played step ratio. Equivalent to a synchronous version, training can take much longer. Set it to None to disable it
 
-        print(os.path.join(self.results_path,'data')+'util_seed_'+str(self.env.seed_)+'.csv')
-
     def visit_softmax_temperature_fn(self, trained_steps):
         """
         Parameter to alter the visit count distribution to ensure that the action selection becomes greedier as training progresses.
@@ -141,8 +140,8 @@ class Game(AbstractGame):
         self.env = gym.make("factory-v0")
         if seed is not None:
             self.env.seed(seed)
+        print(os.path.join([RESULTS_PATH,'data'])+'util_seed_'+str(self.env.seed_)+'.csv')
         
-
     def step(self, action):
         """
         Apply action to the game.
@@ -210,7 +209,8 @@ class Game(AbstractGame):
         df = pd.DataFrame(cols, index=['mean_utilization', 'mean_interarrival_time', 'standard_dev_interarrival',
                           'coefficient_of_var_interarrival', 'machines_per_station', 'mean_wait_time'])
         df = df.transpose()
-        df.to_csv(os.path.join([self.results_path,'data'])+'util_seed_'+str(self.env.seed_)+'.csv')
+        
+        df.to_csv(os.path.join([RESULTS_PATH,'data'])+'util_seed_'+str(self.env.seed_)+'.csv')
         
         np.savetxt('data/lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
         self.env.close()
