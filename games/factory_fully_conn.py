@@ -11,7 +11,7 @@ import csv
 from .abstract_game import AbstractGame
 
 global RESULTS_PATH
-
+print(RESULTS_PATH)
 class MuZeroConfig:
     def __init__(self):
         # More information is available here: https://github.com/werner-duvaud/muzero-general/wiki/Hyperparameter-Optimization
@@ -210,9 +210,12 @@ class Game(AbstractGame):
                           'coefficient_of_var_interarrival', 'machines_per_station', 'mean_wait_time'])
         df = df.transpose()
         
-        df.to_csv(os.path.join(RESULTS_PATH,'data/')+'util_seed_'+str(self.env.seed_)+'.csv')
+        result_dir = os.path.join(RESULTS_PATH,'data/')
+        if not os.path.exists(result_dir):
+            os.makedirs(result_dir)
+        df.to_csv(result_dir+'util_seed_'+str(self.env.seed_)+'.csv')
         
-        np.savetxt(os.path.join(RESULTS_PATH,'data/')+'lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
+        np.savetxt(result_dir+'lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
         self.env.close()
 
     def render(self):
