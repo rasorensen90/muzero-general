@@ -50,7 +50,7 @@ class SelfPlay:
                     0,
                 )
                 toc = time.perf_counter()
-                print(f"play game time: {toc - tic:0.4f} seconds")
+                print(f"play game time: "+"{:.4}".format(toc - tic)+" seconds")
                 replay_buffer.save_game.remote(game_history, shared_storage)
 
             else:
