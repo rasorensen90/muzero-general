@@ -10,7 +10,7 @@ import csv
 
 from .abstract_game import AbstractGame
 
-RESULTS_PATH
+global RESULTS_PATH
 
 class MuZeroConfig:
     def __init__(self):
