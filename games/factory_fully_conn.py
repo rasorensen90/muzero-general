@@ -143,6 +143,7 @@ class Game(AbstractGame):
         self.env = gym.make("factory-v0")
         if seed is not None:
             self.env.seed(seed)
+        global RESULTS_PATH
         print(RESULTS_PATH)
 
     def step(self, action):
