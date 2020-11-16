@@ -12,7 +12,7 @@ from .abstract_game import AbstractGame
 
 if 'RESULTS_PATH' not in globals():
     RESULTS_PATH = ""
-
+print(RESULTS_PATH)
 class MuZeroConfig:
     def __init__(self):
         # More information is available here: https://github.com/werner-duvaud/muzero-general/wiki/Hyperparameter-Optimization
@@ -137,7 +137,7 @@ class Game(AbstractGame):
     """
     Game wrapper.
     """
-
+    
     def __init__(self, seed=None):
         self.env = gym.make("factory-v0")
         if seed is not None:
