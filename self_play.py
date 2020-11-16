@@ -149,7 +149,8 @@ class SelfPlay:
                         True,
                     )
                     toc = time.perf_counter()
-                    print(f"Time for MCTS {toc - tic:0.4f} seconds")
+                    MCTS_time += toc-tic
+                    print(f"Time for MCTS {MCTS_time/len(game_history.action_history):0.4f} seconds")
                     tic = time.perf_counter()
                     action = self.select_action(
                         root,
@@ -159,7 +160,8 @@ class SelfPlay:
                         else 0,
                     )
                     toc = time.perf_counter()
-                    print(f"Time to select actions {toc - tic:0.4f} seconds")
+                    action_time += toc-tic
+                    print(f"Time to select actions {action_time/len(game_history.action_history):0.4f} seconds")
 
                     if render:
                         print(f'Tree depth: {mcts_info["max_tree_depth"]}')
