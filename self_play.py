@@ -35,8 +35,9 @@ class SelfPlay:
             shared_storage.get_info.remote("terminate")
         ):
             self.model.set_weights(ray.get(shared_storage.get_info.remote("weights")))
-
+            print(shared_storage.get_info.remote("training_step"))
             if not test_mode:
+                tic = time.perf_counter()
                 game_history = self.play_game(
                     self.config.visit_softmax_temperature_fn(
                         trained_steps=ray.get(
@@ -48,7 +49,8 @@ class SelfPlay:
                     "self",
                     0,
                 )
-
+                toc = time.perf_counter()
+                print(f"play game time: {toc - tic:0.4f} seconds")
                 replay_buffer.save_game.remote(game_history, shared_storage)
 
             else:
