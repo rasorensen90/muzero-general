@@ -10,7 +10,7 @@ import csv
 
 from .abstract_game import AbstractGame
 
-if RESULTS_PATH in globals():
+if 'RESULTS_PATH' in globals():
     print(RESULTS_PATH)
 
 global RESULTS_PATH
