@@ -12,7 +12,7 @@ from .abstract_game import AbstractGame
 
 
 RESULTS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results", os.path.basename(__file__)[:-3], datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S")) 
-
+print(RESULTS_PATH)
 class MuZeroConfig:
     def __init__(self):
         # More information is available here: https://github.com/werner-duvaud/muzero-general/wiki/Hyperparameter-Optimization
@@ -79,7 +79,7 @@ class MuZeroConfig:
 
         ### Training
         self.results_path = RESULTS_PATH  # Path to store the model weights and TensorBoard logs
-        print(self.results_path)
+        print("config:",self.results_path)
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
         self.training_steps = 100000  # Total number of training steps (ie weights update according to a batch)
         self.batch_size = 32  # Number of parts of games to train on at each training step
