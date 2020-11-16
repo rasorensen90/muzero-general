@@ -37,8 +37,6 @@ class SelfPlay:
             self.model.set_weights(ray.get(shared_storage.get_info.remote("weights")))
             print(shared_storage.get_info.remote("training_step"))
             if not test_mode:
-                tic = time.perf_counter()
-                print(tic)
                 game_history = self.play_game(
                     self.config.visit_softmax_temperature_fn(
                         trained_steps=ray.get(
@@ -50,14 +48,10 @@ class SelfPlay:
                     "self",
                     0,
                 )
-                toc = time.perf_counter()
-                print(toc)
-                print(f"play game time: "+"{:.4}".format(toc - tic)+" seconds")
                 replay_buffer.save_game.remote(game_history, shared_storage)
 
             else:
                 # Take the best action (no exploration) in test mode
-                tic = time.perf_counter()
                 game_history = self.play_game(
                     0,
                     self.config.temperature_threshold,
@@ -65,8 +59,6 @@ class SelfPlay:
                     "self" if len(self.config.players) == 1 else self.config.opponent,
                     self.config.muzero_player,
                 )
-                toc = time.perf_counter()
-                # print(f"play game time (test): "+"{:.4}".format(toc - tic)+" seconds")
                 # Save to the shared storage
                 shared_storage.set_info.remote(
                     {
@@ -148,6 +140,7 @@ class SelfPlay:
 
                 # Choose the action
                 if opponent == "self" or muzero_player == self.game.to_play():
+                    tic = time.perf_counter()
                     root, mcts_info = MCTS(self.config).run(
                         self.model,
                         stacked_observations,
@@ -155,6 +148,9 @@ class SelfPlay:
                         self.game.to_play(),
                         True,
                     )
+                    toc = time.perf_counter()
+                    print(f"Time for MCTS {toc - tic:0.4f} seconds")
+                    tic = time.perf_counter()
                     action = self.select_action(
                         root,
                         temperature
@@ -162,6 +158,8 @@ class SelfPlay:
                         or len(game_history.action_history) < temperature_threshold
                         else 0,
                     )
+                    toc = time.perf_counter()
+                    print(f"Time to select actions {toc - tic:0.4f} seconds")
 
                     if render:
                         print(f'Tree depth: {mcts_info["max_tree_depth"]}')
