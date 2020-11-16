@@ -10,8 +10,11 @@ import csv
 
 from .abstract_game import AbstractGame
 
+if RESULTS_PATH in globals():
+    print(RESULTS_PATH)
+
 global RESULTS_PATH
-print(RESULTS_PATH)
+
 class MuZeroConfig:
     def __init__(self):
         # More information is available here: https://github.com/werner-duvaud/muzero-general/wiki/Hyperparameter-Optimization
