@@ -36,6 +36,7 @@ class SelfPlay:
         ):
             self.model.set_weights(ray.get(shared_storage.get_info.remote("weights")))
             print(shared_storage.get_info.remote("training_step"))
+            print(test_mode)
             if not test_mode:
                 tic = time.perf_counter()
                 game_history = self.play_game(
@@ -50,7 +51,7 @@ class SelfPlay:
                     0,
                 )
                 toc = time.perf_counter()
-                print(f"play game time: "+"{:.4}".format(toc - tic)+" seconds")
+                # print(f"play game time: "+"{:.4}".format(toc - tic)+" seconds")
                 replay_buffer.save_game.remote(game_history, shared_storage)
 
             else:
@@ -64,7 +65,7 @@ class SelfPlay:
                     self.config.muzero_player,
                 )
                 toc = time.perf_counter()
-                print(f"play game time (test): "+"{:.4}".format(toc - tic)+" seconds")
+                # print(f"play game time (test): "+"{:.4}".format(toc - tic)+" seconds")
                 # Save to the shared storage
                 shared_storage.set_info.remote(
                     {
