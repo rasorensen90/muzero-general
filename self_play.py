@@ -122,7 +122,9 @@ class SelfPlay:
 
         if render:
             self.game.render()
-
+        
+        MCTS_time = 0.
+        action_time = 0.
         with torch.no_grad():
             while (
                 not done and len(game_history.action_history) <= self.config.max_moves
