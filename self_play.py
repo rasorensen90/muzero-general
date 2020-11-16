@@ -55,6 +55,7 @@ class SelfPlay:
 
             else:
                 # Take the best action (no exploration) in test mode
+                tic = time.perf_counter()
                 game_history = self.play_game(
                     0,
                     self.config.temperature_threshold,
@@ -62,7 +63,8 @@ class SelfPlay:
                     "self" if len(self.config.players) == 1 else self.config.opponent,
                     self.config.muzero_player,
                 )
-
+                toc = time.perf_counter()
+                print(f"play game time (test): "+"{:.4}".format(toc - tic)+" seconds")
                 # Save to the shared storage
                 shared_storage.set_info.remote(
                     {
