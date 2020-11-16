@@ -208,10 +208,12 @@ class Game(AbstractGame):
         df = pd.DataFrame(cols, index=['mean_utilization', 'mean_interarrival_time', 'standard_dev_interarrival',
                           'coefficient_of_var_interarrival', 'machines_per_station', 'mean_wait_time'])
         df = df.transpose()
+        data_dir = os.path.join(RESULTS_PATH,'data/')
+        if not os.path.exists(data_dir):
+            os.makedirs(data_dir)
+        df.to_csv(data_dir+'util_seed_'+str(self.env.seed_)+'.csv')
         
-        df.to_csv(os.path.join(RESULTS_PATH,'data/')+'util_seed_'+str(self.env.seed_)+'.csv')
-        
-        np.savetxt(os.path.join(RESULTS_PATH,'data/')+'lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
+        np.savetxt(data_dir+'lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
         self.env.close()
 
     def render(self):
