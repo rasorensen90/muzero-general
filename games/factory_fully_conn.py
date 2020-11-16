@@ -10,13 +10,13 @@ import csv
 
 from .abstract_game import AbstractGame
 
-if 'RESULTS_PATH' not in globals():
-    RESULTS_PATH = 'path'
+
+RESULTS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results", os.path.basename(__file__)[:-3], datetime.datetime.now().strftime("%Y-%m-%d--%H-%M")) 
 
 class MuZeroConfig:
     def __init__(self):
         # More information is available here: https://github.com/werner-duvaud/muzero-general/wiki/Hyperparameter-Optimization
-        
+
         self.seed = 0  # Seed for numpy, torch and the game
         self.max_num_gpus = None  # Fix the maximum number of GPUs to use. It's usually faster to use a single GPU (set it to 1) if it has enough memory. None will use every GPUs available
 
@@ -78,9 +78,7 @@ class MuZeroConfig:
 
 
         ### Training
-        self.results_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results", os.path.basename(__file__)[:-3], datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))   # Path to store the model weights and TensorBoard logs
-        global RESULTS_PATH 
-        RESULTS_PATH = self.results_path
+        self.results_path = RESULTS_PATH  # Path to store the model weights and TensorBoard logs
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
         self.training_steps = 100000  # Total number of training steps (ie weights update according to a batch)
         self.batch_size = 32  # Number of parts of games to train on at each training step
@@ -138,13 +136,11 @@ class Game(AbstractGame):
     """
     Game wrapper.
     """
-    
+
     def __init__(self, seed=None):
         self.env = gym.make("factory-v0")
         if seed is not None:
             self.env.seed(seed)
-        global RESULTS_PATH
-        print(RESULTS_PATH)
 
     def step(self, action):
         """
@@ -213,12 +209,9 @@ class Game(AbstractGame):
                           'coefficient_of_var_interarrival', 'machines_per_station', 'mean_wait_time'])
         df = df.transpose()
         
-        result_dir = os.path.join(RESULTS_PATH,'data/')
-        if not os.path.exists(result_dir):
-            os.makedirs(result_dir)
-        df.to_csv(result_dir+'util_seed_'+str(self.env.seed_)+'.csv')
+        df.to_csv(os.path.join(RESULTS_PATH,'data/')+'util_seed_'+str(self.env.seed_)+'.csv')
         
-        np.savetxt(result_dir+'lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
+        np.savetxt(os.path.join(RESULTS_PATH,'data/')+'lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
         self.env.close()
 
     def render(self):
