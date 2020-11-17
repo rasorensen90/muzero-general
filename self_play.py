@@ -123,8 +123,8 @@ class SelfPlay:
         if render:
             self.game.render()
         
-        # MCTS_time = 0.
-        # action_time = 0.
+        MCTS_time = 0.
+        action_time = 0.
         with torch.no_grad():
             while (
                 not done and len(game_history.action_history) <= self.config.max_moves
@@ -142,7 +142,7 @@ class SelfPlay:
 
                 # Choose the action
                 if opponent == "self" or muzero_player == self.game.to_play():
-                    # tic = time.perf_counter()
+                    tic = time.perf_counter()
                     root, mcts_info = MCTS(self.config).run(
                         self.model,
                         stacked_observations,
@@ -150,10 +150,10 @@ class SelfPlay:
                         self.game.to_play(),
                         True,
                     )
-                    # toc = time.perf_counter()
-                    # MCTS_time += toc-tic
+                    toc = time.perf_counter()
+                    MCTS_time += toc-tic
                     
-                    # tic = time.perf_counter()
+                    tic = time.perf_counter()
                     action = self.select_action(
                         root,
                         temperature
@@ -161,11 +161,11 @@ class SelfPlay:
                         or len(game_history.action_history) < temperature_threshold
                         else 0,
                     )
-                    # toc = time.perf_counter()
-                    # action_time += toc-tic
-                    # if len(game_history.action_history)%50 == 0:
-                    #     print(f"Time for MCTS {MCTS_time/len(game_history.action_history):0.4f} seconds")
-                    #     print(f"Time to select actions {action_time/len(game_history.action_history):0.4f} seconds")
+                    toc = time.perf_counter()
+                    action_time += toc-tic
+                    if len(game_history.action_history)%50 == 0:
+                        print(f"Time for MCTS {MCTS_time/len(game_history.action_history):0.4f} seconds")
+                        print(f"Time to select actions {action_time/len(game_history.action_history):0.4f} seconds")
 
                     if render:
                         print(f'Tree depth: {mcts_info["max_tree_depth"]}')
