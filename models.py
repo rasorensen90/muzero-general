@@ -2,6 +2,7 @@ import math
 from abc import ABC, abstractmethod
 
 import torch
+import time
 
 
 class MuZeroNetwork:
@@ -126,11 +127,15 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
         )
 
     def prediction(self, encoded_state):
+        tic = time.perf_counter()
         policy_logits = self.prediction_policy_network(encoded_state)
         value = self.prediction_value_network(encoded_state)
+        toc = time.perf_counter()
+        print(f"Time for prediction {toc-tic):0.4f} seconds")
         return policy_logits, value
 
     def representation(self, observation):
+        tic = time.perf_counter()
         encoded_state = self.representation_network(
             observation.view(observation.shape[0], -1)
         )
@@ -142,9 +147,12 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
         encoded_state_normalized = (
             encoded_state - min_encoded_state
         ) / scale_encoded_state
+        toc = time.perf_counter()
+        print(f"Time for representation {toc-tic):0.4f} seconds")
         return encoded_state_normalized
 
     def dynamics(self, encoded_state, action):
+        tic = time.perf_counter()
         # Stack encoded_state with a game specific one hot encoded action (See paper appendix Network Architecture)
         action_one_hot = (
             torch.zeros((action.shape[0], self.action_space_size))
@@ -166,7 +174,8 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
         next_encoded_state_normalized = (
             next_encoded_state - min_next_encoded_state
         ) / scale_next_encoded_state
-
+        toc = time.perf_counter()
+        print(f"Time for dynamics {toc-tic):0.4f} seconds")
         return next_encoded_state_normalized, reward
 
     def initial_inference(self, observation):
