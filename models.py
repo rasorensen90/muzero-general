@@ -131,7 +131,7 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
         policy_logits = self.prediction_policy_network(encoded_state)
         value = self.prediction_value_network(encoded_state)
         toc = time.perf_counter()
-        print(f"Time for prediction {toc-tic):0.4f} seconds")
+        print(f"Time for prediction {toc-tic:0.4f} seconds")
         return policy_logits, value
 
     def representation(self, observation):
@@ -148,7 +148,7 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
             encoded_state - min_encoded_state
         ) / scale_encoded_state
         toc = time.perf_counter()
-        print(f"Time for representation {toc-tic):0.4f} seconds")
+        print(f"Time for representation {toc-tic:0.4f} seconds")
         return encoded_state_normalized
 
     def dynamics(self, encoded_state, action):
@@ -175,7 +175,7 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
             next_encoded_state - min_next_encoded_state
         ) / scale_next_encoded_state
         toc = time.perf_counter()
-        print(f"Time for dynamics {toc-tic):0.4f} seconds")
+        print(f"Time for dynamics {toc-tic:0.4f} seconds")
         return next_encoded_state_normalized, reward
 
     def initial_inference(self, observation):
