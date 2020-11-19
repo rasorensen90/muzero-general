@@ -362,9 +362,10 @@ class MCTS:
                 policy_logits,
                 hidden_state,
             )
-
+            tic = time.perf_counter()
             self.backpropagate(search_path, value, virtual_to_play, min_max_stats)
-
+            toc = time.perf_counter()
+            print(f"Time for backprop {(toc-tic)*1000:0.4f} ms")
             max_tree_depth = max(max_tree_depth, current_tree_depth)
 
         extra_info = {
