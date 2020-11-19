@@ -153,7 +153,7 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
 
     def dynamics(self, encoded_state, action):
         tic = time.perf_counter()
-        Stack encoded_state with a game specific one hot encoded action (See paper appendix Network Architecture)
+        # Stack encoded_state with a game specific one hot encoded action (See paper appendix Network Architecture)
         action_one_hot = (
             torch.zeros((action.shape[0], self.action_space_size))
             .to(action.device)
