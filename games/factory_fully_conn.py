@@ -37,7 +37,7 @@ class MuZeroConfig:
         ### Self-Play
         self.num_workers = 30  # Number of simultaneous threads/workers self-playing to feed the replay buffer
         self.selfplay_on_gpu = False
-        self.max_moves = 50000  # Maximum number of moves if game is not finished before
+        self.max_moves = 500  # Maximum number of moves if game is not finished before
         self.num_simulations = 20  # Number of future moves self-simulated
         self.discount = 0.99  # Chronological discount of the reward
         self.temperature_threshold = None  # Number of moves before dropping the temperature given by visit_softmax_temperature_fn to 0 (ie selecting the best action). If None, visit_softmax_temperature_fn is used every time
@@ -184,6 +184,7 @@ class Game(AbstractGame):
         """
         Properly close the game.
         """
+        print("Ready to close game")
         # utilization
         operational_times = {mach: mach.total_operational_time for mach in self.env.my_sim.machines_list}
         mach_util = {mach: operational_times[mach]/self.env.sim_time for mach in self.env.my_sim.machines_list}
