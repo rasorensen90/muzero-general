@@ -285,6 +285,7 @@ class MCTS:
         We then run a Monte Carlo Tree Search using only action sequences and the model
         learned by the network.
         """
+        tic = time.perf_counter()
         if override_root_with:
             root = override_root_with
             root_predicted_value = None
@@ -319,6 +320,8 @@ class MCTS:
                 policy_logits,
                 hidden_state,
             )
+        toc = time.perf_counter()
+        print(f"Time for initial phase {(toc-tic)*1000:0.4f} ms")
 
         if add_exploration_noise:
             root.add_exploration_noise(
