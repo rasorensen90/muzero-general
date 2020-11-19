@@ -285,7 +285,7 @@ class MCTS:
         We then run a Monte Carlo Tree Search using only action sequences and the model
         learned by the network.
         """
-        tic = time.perf_counter()
+        # tic = time.perf_counter()
         if override_root_with:
             root = override_root_with
             root_predicted_value = None
@@ -320,8 +320,8 @@ class MCTS:
                 policy_logits,
                 hidden_state,
             )
-        toc = time.perf_counter()
-        print(f"Time for initial phase {(toc-tic)*1000:0.4f} ms")
+        # toc = time.perf_counter()
+        # print(f"Time for initial phase {(toc-tic)*1000:0.4f} ms")
 
         if add_exploration_noise:
             root.add_exploration_noise(
@@ -340,7 +340,7 @@ class MCTS:
             node = root
             search_path = [node]
             current_tree_depth = 0
-            tic = time.perf_counter()
+            # tic = time.perf_counter()
             while node.expanded():
                 current_tree_depth += 1
                 action, node = self.select_child(node, min_max_stats)
@@ -351,21 +351,21 @@ class MCTS:
                     virtual_to_play = self.config.players[virtual_to_play + 1]
                 else:
                     virtual_to_play = self.config.players[0]
-            toc = time.perf_counter()
-            print(f"Time for node_expansion {(toc-tic)*1000:0.4f} ms")
+            # toc = time.perf_counter()
+            # print(f"Time for node_expansion {(toc-tic)*1000:0.4f} ms")
             # Inside the search tree we use the dynamics function to obtain the next hidden
             # state given an action and the previous hidden state
             parent = search_path[-2]
-            tic = time.perf_counter()
+            # tic = time.perf_counter()
             value, reward, policy_logits, hidden_state = model.recurrent_inference(
                 parent.hidden_state,
                 torch.tensor([[action]]).to(parent.hidden_state.device),
             )
-            toc = time.perf_counter()
-            print(f"Time for networks {(toc-tic)*1000:0.4f} ms")
+            # toc = time.perf_counter()
+            # print(f"Time for networks {(toc-tic)*1000:0.4f} ms")
             value = models.support_to_scalar(value, self.config.support_size).item()
             reward = models.support_to_scalar(reward, self.config.support_size).item()
-            tic = time.perf_counter()
+            # tic = time.perf_counter()
             node.expand(
                 self.config.action_space,
                 virtual_to_play,
@@ -373,8 +373,8 @@ class MCTS:
                 policy_logits,
                 hidden_state,
             )
-            toc = time.perf_counter()
-            print(f"Time for node.expand {(toc-tic)*1000:0.4f} ms")
+            # toc = time.perf_counter()
+            # print(f"Time for node.expand {(toc-tic)*1000:0.4f} ms")
             # tic = time.perf_counter()
             self.backpropagate(search_path, value, virtual_to_play, min_max_stats)
             # toc = time.perf_counter()
