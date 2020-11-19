@@ -340,7 +340,7 @@ class MCTS:
             node = root
             search_path = [node]
             current_tree_depth = 0
-            # tic = time.perf_counter()
+            tic = time.perf_counter()
             while node.expanded():
                 current_tree_depth += 1
                 action, node = self.select_child(node, min_max_stats)
@@ -351,8 +351,8 @@ class MCTS:
                     virtual_to_play = self.config.players[virtual_to_play + 1]
                 else:
                     virtual_to_play = self.config.players[0]
-            # toc = time.perf_counter()
-            # print(f"Time for node_expansion {(toc-tic)*1000:0.4f} ms")
+            toc = time.perf_counter()
+            print(f"Time for node_expansion {(toc-tic)*1000:0.4f} ms")
             # Inside the search tree we use the dynamics function to obtain the next hidden
             # state given an action and the previous hidden state
             parent = search_path[-2]
