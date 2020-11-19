@@ -328,19 +328,19 @@ class MCTS:
                 dirichlet_alpha=self.config.root_dirichlet_alpha,
                 exploration_fraction=self.config.root_exploration_fraction,
             )
-        tic = time.perf_counter()
+        # tic = time.perf_counter()
         min_max_stats = MinMaxStats()
-        toc = time.perf_counter()
-        print(f"Time for MinMaxStats {(toc-tic)*1000:0.4f} ms")
+        # toc = time.perf_counter()
+        # print(f"Time for MinMaxStats {(toc-tic)*1000:0.4f} ms")
         
         max_tree_depth = 0
-        tic = time.perf_counter()
+        # tic = time.perf_counter()
         for _ in range(self.config.num_simulations):
             virtual_to_play = to_play
             node = root
             search_path = [node]
             current_tree_depth = 0
-            # tic = time.perf_counter()
+            tic = time.perf_counter()
             while node.expanded():
                 current_tree_depth += 1
                 action, node = self.select_child(node, min_max_stats)
@@ -351,17 +351,21 @@ class MCTS:
                     virtual_to_play = self.config.players[virtual_to_play + 1]
                 else:
                     virtual_to_play = self.config.players[0]
-            # toc = time.perf_counter()
-            # print(f"Time for node_expansion {(toc-tic)*1000:0.4f} ms")
+            toc = time.perf_counter()
+            print(f"Time for node_expansion {(toc-tic)*1000:0.4f} ms")
             # Inside the search tree we use the dynamics function to obtain the next hidden
             # state given an action and the previous hidden state
             parent = search_path[-2]
+            tic = time.perf_counter()
             value, reward, policy_logits, hidden_state = model.recurrent_inference(
                 parent.hidden_state,
                 torch.tensor([[action]]).to(parent.hidden_state.device),
             )
+            toc = time.perf_counter()
+            print(f"Time for networks {(toc-tic)*1000:0.4f} ms")
             value = models.support_to_scalar(value, self.config.support_size).item()
             reward = models.support_to_scalar(reward, self.config.support_size).item()
+            tic = time.perf_counter()
             node.expand(
                 self.config.action_space,
                 virtual_to_play,
@@ -369,13 +373,15 @@ class MCTS:
                 policy_logits,
                 hidden_state,
             )
+            toc = time.perf_counter()
+            print(f"Time for node.expand {(toc-tic)*1000:0.4f} ms")
             # tic = time.perf_counter()
             self.backpropagate(search_path, value, virtual_to_play, min_max_stats)
             # toc = time.perf_counter()
             # print(f"Time for backprop {(toc-tic)*1000:0.4f} ms")
             max_tree_depth = max(max_tree_depth, current_tree_depth)
-        toc = time.perf_counter()
-        print(f"Time for simulations {(toc-tic)*1000:0.4f} ms")
+        # toc = time.perf_counter()
+        # print(f"Time for simulations {(toc-tic)*1000:0.4f} ms")
         extra_info = {
             "max_tree_depth": max_tree_depth,
             "root_predicted_value": root_predicted_value,
