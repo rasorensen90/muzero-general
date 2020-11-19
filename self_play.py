@@ -152,7 +152,7 @@ class SelfPlay:
                     )
                     toc = time.perf_counter()
                     MCTS_time += toc-tic
-                    print(f"Time for MCTS {toc-tic:0.4f} seconds")
+                    print(f"Time for MCTS {(toc-tic)*1000:0.4f} ms")
                     tic = time.perf_counter()
                     action = self.select_action(
                         root,
@@ -164,7 +164,7 @@ class SelfPlay:
                     toc = time.perf_counter()
                     action_time += toc-tic
                     
-                    print(f"Time to select actions {toc-tic:0.4f} seconds")
+                    print(f"Time to select actions {(toc-tic)*1000:0.4f} ms")
                     # if len(game_history.action_history)%50 == 0:
                     #     print(f"Time for MCTS {MCTS_time/len(game_history.action_history):0.4f} seconds")
                     #     print(f"Time to select actions {action_time/len(game_history.action_history):0.4f} seconds")
