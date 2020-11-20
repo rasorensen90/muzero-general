@@ -75,14 +75,9 @@ class MuZeroConfig:
 
 
         ### Training
-        global RESULTS_PATH
-        if "RESULTS_PATH" in locals():
-            print("local")
-        elif "RESULTS_PATH" in globals():
-            print("global")
-        else:
-            print("Not existing")
-        self.results_path = RESULTS_PATH  # Path to store the model weights and TensorBoard logs
+        
+        self.results_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results", os.path.basename(__file__)[:-3], 
+                            datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))   # Path to store the model weights and TensorBoard logs
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
         self.training_steps = 1000  # Total number of training steps (ie weights update according to a batch)
         self.batch_size = 32  # Number of parts of games to train on at each training step
@@ -184,11 +179,11 @@ class Game(AbstractGame):
         """
         return np.array([[self.env.reset()]])
 
-    def close(self):
+    def close(self, results_path):
         """
         Properly close the game.
         """
-        print("Ready to close game")
+        print("Saving lateness to .csv files here:", results_path)
         print("lateness: ", np.mean(self.env.my_sim.lateness[-10000:]))
         # utilization
         operational_times = {mach: mach.total_operational_time for mach in self.env.my_sim.machines_list}
@@ -214,13 +209,20 @@ class Game(AbstractGame):
         df = pd.DataFrame(cols, index=['mean_utilization', 'mean_interarrival_time', 'standard_dev_interarrival',
                           'coefficient_of_var_interarrival', 'machines_per_station', 'mean_wait_time'])
         df = df.transpose()
-        global RESULTS_PATH
-        data_dir = os.path.join(RESULTS_PATH,'data/')
+        data_dir = os.path.join(results_path,'data/')
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
         df.to_csv(data_dir+'util_seed_'+str(self.env.seed_)+'.csv')
         
         np.savetxt(data_dir+'lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
+        self.env.close()
+        
+    def close(self):
+        """
+        Properly close the game.
+        """
+        print("lateness: ", np.mean(self.env.my_sim.lateness[-10000:]))
+        
         self.env.close()
 
     def render(self):
