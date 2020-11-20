@@ -37,7 +37,7 @@ class SelfPlay:
             shared_storage.get_info.remote("terminate")
         ):
             self.model.set_weights(ray.get(shared_storage.get_info.remote("weights")))
-            print(shared_storage.get_info.remote("training_step"))
+            # print(shared_storage.get_info.remote("training_step"))
             if not test_mode:
                 game_history = self.play_game(
                     self.config.visit_softmax_temperature_fn(
@@ -198,7 +198,8 @@ class SelfPlay:
         return game_history
 
     def close_game(self):
-        if 'results_path' in inspect.getfullargspec(self.game.close):
+        
+        if 'results_path' in inspect.getfullargspec(self.game.close).args:
             self.game.close(results_path = self.config.results_path)
         else:
             self.game.close()
