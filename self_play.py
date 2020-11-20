@@ -6,6 +6,8 @@ import ray
 import torch
 
 import models
+import inspect
+
 
 
 @ray.remote
@@ -196,7 +198,10 @@ class SelfPlay:
         return game_history
 
     def close_game(self):
-        self.game.close()
+        if 'results_path' in inspect.getfullargspec(game.close):
+            self.game.close(results_path = self.config.results_path)
+        else:
+            self.game.close()
 
     def select_opponent_action(self, opponent, stacked_observations):
         """
