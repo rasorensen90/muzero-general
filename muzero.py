@@ -22,7 +22,12 @@ import self_play
 import shared_storage
 import trainer
 
-
+if "RESULTS_PATH" in locals():
+    print("local")
+elif "RESULTS_PATH" in globals():
+    print("global")
+else:
+    print("Not existing")
 
 class MuZero:
     """
