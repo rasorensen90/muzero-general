@@ -37,7 +37,7 @@ class MuZeroConfig:
         ### Self-Play
         self.num_workers = 0  # Number of simultaneous threads/workers self-playing to feed the replay buffer
         self.selfplay_on_gpu = False
-        self.max_moves = 100  # Maximum number of moves if game is not finished before
+        self.max_moves = 1000  # Maximum number of moves if game is not finished before
         self.num_simulations = 5  # Number of future moves self-simulated
         self.discount = 0.99  # Chronological discount of the reward
         self.temperature_threshold = None  # Number of moves before dropping the temperature given by visit_softmax_temperature_fn to 0 (ie selecting the best action). If None, visit_softmax_temperature_fn is used every time
@@ -80,7 +80,7 @@ class MuZeroConfig:
         ### Training
         self.results_path = RESULTS_PATH  # Path to store the model weights and TensorBoard logs
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
-        self.training_steps = 10  # Total number of training steps (ie weights update according to a batch)
+        self.training_steps = 1000  # Total number of training steps (ie weights update according to a batch)
         self.batch_size = 32  # Number of parts of games to train on at each training step
         self.checkpoint_interval = 10  # Number of training steps before using the model for self-playing
         self.value_loss_weight = 0.25  # Scale the value loss to avoid overfitting of the value function, paper recommends 0.25 (See paper appendix Reanalyze)
@@ -185,7 +185,7 @@ class Game(AbstractGame):
         Properly close the game.
         """
         print("Ready to close game")
-        print(np.mean(self.env.my_sim.lateness[-10000:]))
+        print("lateness: ", np.mean(self.env.my_sim.lateness[-10000:]))
         # utilization
         operational_times = {mach: mach.total_operational_time for mach in self.env.my_sim.machines_list}
         mach_util = {mach: operational_times[mach]/self.env.sim_time for mach in self.env.my_sim.machines_list}
