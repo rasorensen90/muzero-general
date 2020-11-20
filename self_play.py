@@ -198,7 +198,7 @@ class SelfPlay:
         return game_history
 
     def close_game(self):
-        if 'results_path' in inspect.getfullargspec(game.close):
+        if 'results_path' in inspect.getfullargspec(self.game.close):
             self.game.close(results_path = self.config.results_path)
         else:
             self.game.close()
