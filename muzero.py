@@ -20,7 +20,8 @@ import shared_storage
 import trainer
 
 import datetime
-RESULTS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results", os.path.basename(__file__)[:-3], datetime.datetime.now().strftime("%Y-%m-%d--%H-%M")) 
+RESULTS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results", os.path.basename(__file__)[:-3], 
+                            datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S")) 
 
 class MuZero:
     """
