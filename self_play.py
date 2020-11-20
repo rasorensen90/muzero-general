@@ -142,7 +142,7 @@ class SelfPlay:
 
                 # Choose the action
                 if opponent == "self" or muzero_player == self.game.to_play():
-                    tic = time.perf_counter()
+                    # tic = time.perf_counter()
                     root, mcts_info = MCTS(self.config).run(
                         self.model,
                         stacked_observations,
@@ -150,10 +150,10 @@ class SelfPlay:
                         self.game.to_play(),
                         True,
                     )
-                    toc = time.perf_counter()
-                    MCTS_time += toc-tic
-                    print(f"Time for MCTS {(toc-tic)*1000:0.4f} ms")
-                    tic = time.perf_counter()
+                    # toc = time.perf_counter()
+                    # MCTS_time += toc-tic
+                    # print(f"Time for MCTS {(toc-tic)*1000:0.4f} ms")
+                    # tic = time.perf_counter()
                     action = self.select_action(
                         root,
                         temperature
@@ -161,10 +161,10 @@ class SelfPlay:
                         or len(game_history.action_history) < temperature_threshold
                         else 0,
                     )
-                    toc = time.perf_counter()
-                    action_time += toc-tic
+                    # toc = time.perf_counter()
+                    # action_time += toc-tic
                     
-                    print(f"Time to select actions {(toc-tic)*1000:0.4f} ms")
+                    # print(f"Time to select actions {(toc-tic)*1000:0.4f} ms")
                     # if len(game_history.action_history)%50 == 0:
                     #     print(f"Time for MCTS {MCTS_time/len(game_history.action_history):0.4f} seconds")
                     #     print(f"Time to select actions {action_time/len(game_history.action_history):0.4f} seconds")
@@ -340,7 +340,7 @@ class MCTS:
             node = root
             search_path = [node]
             current_tree_depth = 0
-            tic = time.perf_counter()
+            # tic = time.perf_counter()
             while node.expanded():
                 current_tree_depth += 1
                 action, node = self.select_child(node, min_max_stats)
@@ -351,8 +351,8 @@ class MCTS:
                     virtual_to_play = self.config.players[virtual_to_play + 1]
                 else:
                     virtual_to_play = self.config.players[0]
-            toc = time.perf_counter()
-            print(f"Time for node_expansion {(toc-tic)*1000:0.4f} ms")
+            # toc = time.perf_counter()
+            # print(f"Time for node_expansion {(toc-tic)*1000:0.4f} ms")
             # Inside the search tree we use the dynamics function to obtain the next hidden
             # state given an action and the previous hidden state
             parent = search_path[-2]
