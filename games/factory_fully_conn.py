@@ -75,6 +75,7 @@ class MuZeroConfig:
 
 
         ### Training
+        global RESULTS_PATH
         self.results_path = RESULTS_PATH  # Path to store the model weights and TensorBoard logs
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
         self.training_steps = 1000  # Total number of training steps (ie weights update according to a batch)
