@@ -185,6 +185,7 @@ class Game(AbstractGame):
         Properly close the game.
         """
         print("Ready to close game")
+        print(np.mean(self.env.my_sim.lateness[-10000:]))
         # utilization
         operational_times = {mach: mach.total_operational_time for mach in self.env.my_sim.machines_list}
         mach_util = {mach: operational_times[mach]/self.env.sim_time for mach in self.env.my_sim.machines_list}
