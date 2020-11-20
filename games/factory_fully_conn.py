@@ -10,9 +10,6 @@ import csv
 
 from .abstract_game import AbstractGame
 
-
-RESULTS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results", os.path.basename(__file__)[:-3], datetime.datetime.now().strftime("%Y-%m-%d--%H-%M")) 
-
 class MuZeroConfig:
     def __init__(self):
         # More information is available here: https://github.com/werner-duvaud/muzero-general/wiki/Hyperparameter-Optimization
@@ -210,6 +207,7 @@ class Game(AbstractGame):
         df = pd.DataFrame(cols, index=['mean_utilization', 'mean_interarrival_time', 'standard_dev_interarrival',
                           'coefficient_of_var_interarrival', 'machines_per_station', 'mean_wait_time'])
         df = df.transpose()
+        global RESULTS_PATH
         data_dir = os.path.join(RESULTS_PATH,'data/')
         if not os.path.exists(data_dir):
             os.makedirs(data_dir)
