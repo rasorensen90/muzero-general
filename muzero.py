@@ -6,8 +6,6 @@ import pickle
 import sys
 import time
 import datetime
-RESULTS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results", os.path.basename(__file__)[:-3], 
-                            datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S")) 
 
 import nevergrad
 import numpy
@@ -21,13 +19,6 @@ import replay_buffer
 import self_play
 import shared_storage
 import trainer
-
-if "RESULTS_PATH" in locals():
-    print("local")
-elif "RESULTS_PATH" in globals():
-    print("global")
-else:
-    print("Not existing")
 
 class MuZero:
     """
