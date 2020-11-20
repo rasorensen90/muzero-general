@@ -32,10 +32,10 @@ class MuZeroConfig:
 
 
         ### Self-Play
-        self.num_workers = 30  # Number of simultaneous threads/workers self-playing to feed the replay buffer
+        self.num_workers = 20  # Number of simultaneous threads/workers self-playing to feed the replay buffer
         self.selfplay_on_gpu = False
         self.max_moves = 1000  # Maximum number of moves if game is not finished before
-        self.num_simulations = 5  # Number of future moves self-simulated
+        self.num_simulations = 20  # Number of future moves self-simulated
         self.discount = 0.99  # Chronological discount of the reward
         self.temperature_threshold = None  # Number of moves before dropping the temperature given by visit_softmax_temperature_fn to 0 (ie selecting the best action). If None, visit_softmax_temperature_fn is used every time
 
