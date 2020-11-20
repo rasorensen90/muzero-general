@@ -89,7 +89,7 @@ class FactoryEnv(gym.Env):
     
     def seed(self,seed):
         self.seed_=seed
-        print("Seed set to: ", self.seed_)
+        # print("Seed set to: ", seed)
         
         state = self.reset() # Resetting env with new seed. Returning state
         return state
