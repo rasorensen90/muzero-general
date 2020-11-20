@@ -49,6 +49,13 @@ class MuZero:
 
     def __init__(self, game_name, config=None, split_resources_in=1):
         # Load the game and the config from the module with the game name
+        global RESULTS_PATH
+        if "RESULTS_PATH" in locals():
+            print("local")
+        elif "RESULTS_PATH" in globals():
+            print("global")
+        else:
+            print("Not existing")
         try:
             game_module = importlib.import_module("games." + game_name)
             self.Game = game_module.Game
