@@ -2,11 +2,9 @@ import datetime
 import os
 
 import gym
-import factory
 import numpy as np
 import torch
 import pandas as pd
-import csv
 
 from .abstract_game import AbstractGame
 
@@ -193,8 +191,8 @@ class Game(AbstractGame):
             mach_util = {mach: operational_times[mach]/self.env.sim_time for mach in self.env.my_sim.machines_list}
             mean_util = {station: round(np.mean([mach_util[mach] for mach in self.env.my_sim.machines_list if mach.station == station]), 3)
                          for station in self.env.my_sim.stations}
-            parts_per_station = {station: sum([mach.parts_made for mach in self.env.my_sim.machines_list if mach.station == station]) for
-                         station in self.env.my_sim.stations}
+            # parts_per_station = {station: sum([mach.parts_made for mach in self.env.my_sim.machines_list if mach.station == station]) for
+            #              station in self.env.my_sim.stations}
     
             station_wait_times = {station: np.mean(sum([self.env.my_sim.ht_seq_wait[(ht, seq)] for ht, seq in self.env.my_sim.station_HT_seq[station]], [])) for
                                   station in self.env.my_sim.stations}
