@@ -345,7 +345,8 @@ class MuZero:
         try:
             if self.replay_buffer_worker:
                 self.replay_buffer = ray.get(self.replay_buffer_worker.get_buffer.remote())
-        
+        except:
+            pass
 
         print("\nShutting down workers...")
 
