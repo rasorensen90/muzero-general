@@ -342,8 +342,10 @@ class MuZero:
             self.checkpoint = ray.get(
                 self.shared_storage_worker.get_checkpoint.remote()
             )
-        if self.replay_buffer_worker:
-            self.replay_buffer = ray.get(self.replay_buffer_worker.get_buffer.remote())
+        try:
+            if self.replay_buffer_worker:
+                self.replay_buffer = ray.get(self.replay_buffer_worker.get_buffer.remote())
+        
 
         print("\nShutting down workers...")
 
