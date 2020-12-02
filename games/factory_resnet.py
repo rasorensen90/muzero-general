@@ -54,7 +54,7 @@ class MuZeroConfig:
         # Residual Network
         self.downsample = "resnet"  # Downsample observations before representation network, False / "CNN" (lighter) / "resnet" (See paper appendix Network Architecture)
         self.blocks = 4  # Number of blocks in the ResNet
-        self.channels = 256  # Number of channels in the ResNet
+        self.channels = 64  # Number of channels in the ResNet
         self.reduced_channels_reward = 256  # Number of channels in reward head
         self.reduced_channels_value = 256  # Number of channels in value head
         self.reduced_channels_policy = 256  # Number of channels in policy head
