@@ -1,17 +1,12 @@
 import datetime
 import os
-
-import gym
 import factory
+import gym
 import numpy as np
 import torch
 import pandas as pd
-import csv
 
 from .abstract_game import AbstractGame
-
-
-RESULTS_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results", os.path.basename(__file__)[:-3], datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S")) 
 
 class MuZeroConfig:
     def __init__(self):
@@ -35,11 +30,11 @@ class MuZeroConfig:
 
 
         ### Self-Play
-        self.num_workers = 5  # Number of simultaneous threads/workers self-playing to feed the replay buffer
+        self.num_workers = 10  # Number of simultaneous threads/workers self-playing to feed the replay buffer
         self.selfplay_on_gpu = False
-        self.max_moves = 25000  # Maximum number of moves if game is not finished before
+        self.max_moves = 300000  # Maximum number of moves if game is not finished before
         self.num_simulations = 20  # Number of future moves self-simulated
-        self.discount = 0.99  # Chronological discount of the reward
+        self.discount = 0.999  # Chronological discount of the reward
         self.temperature_threshold = None  # Number of moves before dropping the temperature given by visit_softmax_temperature_fn to 0 (ie selecting the best action). If None, visit_softmax_temperature_fn is used every time
 
         # Root prior exploration noise
@@ -58,7 +53,7 @@ class MuZeroConfig:
 
         # Residual Network
         self.downsample = "resnet"  # Downsample observations before representation network, False / "CNN" (lighter) / "resnet" (See paper appendix Network Architecture)
-        self.blocks = 16  # Number of blocks in the ResNet
+        self.blocks = 4  # Number of blocks in the ResNet
         self.channels = 256  # Number of channels in the ResNet
         self.reduced_channels_reward = 256  # Number of channels in reward head
         self.reduced_channels_value = 256  # Number of channels in value head
@@ -78,28 +73,29 @@ class MuZeroConfig:
 
 
         ### Training
-        self.results_path = RESULTS_PATH # Path to store the model weights and TensorBoard logs
+        self.results_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "../results", os.path.basename(__file__)[:-3], 
+                            datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S"))   # Path to store the model weights and TensorBoard logs
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
         self.training_steps = 100000  # Total number of training steps (ie weights update according to a batch)
         self.batch_size = 32  # Number of parts of games to train on at each training step
-        self.checkpoint_interval = int(1e4)  # Number of training steps before using the model for self-playing
+        self.checkpoint_interval = 1000  # Number of training steps before using the model for self-playing
         self.value_loss_weight = 0.25  # Scale the value loss to avoid overfitting of the value function, paper recommends 0.25 (See paper appendix Reanalyze)
         self.train_on_gpu = True if torch.cuda.is_available() else False  # Train on GPU if available
 
-        self.optimizer = "SGD"  # "Adam" or "SGD". Paper uses SGD
+        self.optimizer = "Adam"  # "Adam" or "SGD". Paper uses SGD
         self.weight_decay = int(1e-4)  # L2 weights regularization
         self.momentum = 0.9  # Used only if optimizer is SGD
 
         # Exponential learning rate schedule
-        self.lr_init = 0.05  # Initial learning rate
-        self.lr_decay_rate = 0.1  # Set it to 1 to use a constant learning rate
-        self.lr_decay_steps = int(35e3)
+        self.lr_init = 0.005  # Initial learning rate
+        self.lr_decay_rate = 0.99  # Set it to 1 to use a constant learning rate
+        self.lr_decay_steps = 1000
 
 
 
         ### Replay Buffer
-        self.replay_buffer_size = int(1e3)  # Number of self-play games to keep in the replay buffer
-        self.num_unroll_steps = 20  # Number of game moves to keep for every batch element
+        self.replay_buffer_size = 1000  # Number of self-play games to keep in the replay buffer
+        self.num_unroll_steps = 50  # Number of game moves to keep for every batch element
         self.td_steps = 500  # Number of steps in the future to take into account for calculating the target value
         self.PER = True  # Prioritized Replay (See paper appendix Training), select in priority the elements in the replay buffer which are unexpected for the network
         self.PER_alpha = 1  # How much prioritization is used, 0 corresponding to the uniform case, paper suggests 1
@@ -115,6 +111,7 @@ class MuZeroConfig:
         self.training_delay = 0  # Number of seconds to wait after each training step
         self.ratio = None  # Desired training steps per self played step ratio. Equivalent to a synchronous version, training can take much longer. Set it to None to disable it
 
+        
     def visit_softmax_temperature_fn(self, trained_steps):
         """
         Parameter to alter the visit count distribution to ensure that the action selection becomes greedier as training progresses.
@@ -141,7 +138,6 @@ class Game(AbstractGame):
         if seed is not None:
             self.env.seed(seed)
         
-        
     def step(self, action):
         """
         Apply action to the game.
@@ -153,8 +149,7 @@ class Game(AbstractGame):
             The new observation, the reward and a boolean if the game has ended.
         """
         observation, reward, done, _ = self.env.step(action)
-        observation = np.reshape(observation, (1,1,355))
-        return observation, reward, done
+        return np.array([[observation]]), reward, done
 
     def legal_actions(self):
         """
@@ -177,43 +172,48 @@ class Game(AbstractGame):
         Returns:
             Initial observation of the game.
         """
-        observation = self.env.reset()
-        observation = np.reshape(observation, (1,1,355))
-        return observation
+        return np.array([[self.env.reset()]])
 
-    def close(self):
+    def close(self, results_path):
         """
         Properly close the game.
         """
-        # utilization
-        operational_times = {mach: mach.total_operational_time for mach in self.env.my_sim.machines_list}
-        mach_util = {mach: operational_times[mach]/self.env.sim_time for mach in self.env.my_sim.machines_list}
-        mean_util = {station: round(np.mean([mach_util[mach] for mach in self.env.my_sim.machines_list if mach.station == station]), 3)
-                     for station in self.env.my_sim.stations}
-        parts_per_station = {station: sum([mach.parts_made for mach in self.env.my_sim.machines_list if mach.station == station]) for
-                     station in self.env.my_sim.stations}
-
-        station_wait_times = {station: np.mean(sum([self.env.my_sim.ht_seq_wait[(ht, seq)] for ht, seq in self.env.my_sim.station_HT_seq[station]], [])) for
-                              station in self.env.my_sim.stations}
-        inter_arrival_times = {station: [t_i_plus_1 - t_i for t_i, t_i_plus_1 in zip(self.env.my_sim.arrival_times[station],
-                                                    self.env.my_sim.arrival_times[station][1:])] for station in self.env.my_sim.stations}
-        mean_inter = {station: round(np.mean(inter_ar_ts), 3) for station, inter_ar_ts in inter_arrival_times.items()}
-        std_inter = {station: round(np.std(inter_ar_ts), 3) for station, inter_ar_ts in inter_arrival_times.items()}
-        coeff_var = {station: round(std_inter[station]/mean_inter[station], 3) for station in self.env.my_sim.stations}
-        machines_per_station = {station: len([mach for mach in self.env.my_sim.machines_list if mach.station == station]) for station in
-                                self.env.my_sim.stations}
+        print("lateness: ", np.mean(self.env.my_sim.lateness[-10000:]))
+        if results_path is not None:
         
-        print(np.mean(self.env.my_sim.lateness[-10000:]))
-        
-        cols = [mean_util, mean_inter, std_inter, coeff_var, machines_per_station, station_wait_times]
-        df = pd.DataFrame(cols, index=['mean_utilization', 'mean_interarrival_time', 'standard_dev_interarrival',
-                          'coefficient_of_var_interarrival', 'machines_per_station', 'mean_wait_time'])
-        df = df.transpose()
-        
-        df.to_csv(os.path.join(RESULTS_PATH,'data/')+'util_seed_'+str(self.env.seed_)+'.csv')
-        
-        np.savetxt(os.path.join(RESULTS_PATH,'data/')+'lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
+            print("Saving lateness to .csv files here:", results_path)
+            
+            # utilization
+            operational_times = {mach: mach.total_operational_time for mach in self.env.my_sim.machines_list}
+            mach_util = {mach: operational_times[mach]/self.env.sim_time for mach in self.env.my_sim.machines_list}
+            mean_util = {station: round(np.mean([mach_util[mach] for mach in self.env.my_sim.machines_list if mach.station == station]), 3)
+                         for station in self.env.my_sim.stations}
+            # parts_per_station = {station: sum([mach.parts_made for mach in self.env.my_sim.machines_list if mach.station == station]) for
+            #              station in self.env.my_sim.stations}
+    
+            station_wait_times = {station: np.mean(sum([self.env.my_sim.ht_seq_wait[(ht, seq)] for ht, seq in self.env.my_sim.station_HT_seq[station]], [])) for
+                                  station in self.env.my_sim.stations}
+            inter_arrival_times = {station: [t_i_plus_1 - t_i for t_i, t_i_plus_1 in zip(self.env.my_sim.arrival_times[station],
+                                                        self.env.my_sim.arrival_times[station][1:])] for station in self.env.my_sim.stations}
+            mean_inter = {station: round(np.mean(inter_ar_ts), 3) for station, inter_ar_ts in inter_arrival_times.items()}
+            std_inter = {station: round(np.std(inter_ar_ts), 3) for station, inter_ar_ts in inter_arrival_times.items()}
+            coeff_var = {station: round(std_inter[station]/mean_inter[station], 3) for station in self.env.my_sim.stations}
+            machines_per_station = {station: len([mach for mach in self.env.my_sim.machines_list if mach.station == station]) for station in
+                                    self.env.my_sim.stations}
+                        
+            cols = [mean_util, mean_inter, std_inter, coeff_var, machines_per_station, station_wait_times]
+            df = pd.DataFrame(cols, index=['mean_utilization', 'mean_interarrival_time', 'standard_dev_interarrival',
+                              'coefficient_of_var_interarrival', 'machines_per_station', 'mean_wait_time'])
+            df = df.transpose()
+            data_dir = os.path.join(results_path,'data/')
+            if not os.path.exists(data_dir):
+                os.makedirs(data_dir)
+            df.to_csv(data_dir+'util_seed_'+str(self.env.seed_)+'.csv')
+            
+            np.savetxt(data_dir+'lateness_seed_'+str(self.env.seed_)+'.csv', np.array(self.env.my_sim.lateness), delimiter=',')
+            print(".csv files saved")
         self.env.close()
+
 
     def render(self):
         """
