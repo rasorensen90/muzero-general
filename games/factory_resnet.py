@@ -49,11 +49,11 @@ class MuZeroConfig:
 
         ### Network
         self.network = "resnet"  # "resnet" / "fullyconnected"
-        self.support_size = 300  # Value and reward are scaled (with almost sqrt) and encoded on a vector with a range of -support_size to support_size. Choose it so that support_size <= sqrt(max(abs(discounted reward)))
+        self.support_size = 50  # Value and reward are scaled (with almost sqrt) and encoded on a vector with a range of -support_size to support_size. Choose it so that support_size <= sqrt(max(abs(discounted reward)))
 
         # Residual Network
         self.downsample = "resnet"  # Downsample observations before representation network, False / "CNN" (lighter) / "resnet" (See paper appendix Network Architecture)
-        self.blocks = 4  # Number of blocks in the ResNet
+        self.blocks = 2  # Number of blocks in the ResNet
         self.channels = 64  # Number of channels in the ResNet
         self.reduced_channels_reward = 64  # Number of channels in reward head
         self.reduced_channels_value = 64  # Number of channels in value head
