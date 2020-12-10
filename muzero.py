@@ -349,7 +349,8 @@ class MuZero:
             pass
 
         print("\nShutting down workers...")
-
+        for self_play_worker in self.self_play_workers:
+            self_play_worker.close_game.remote()
         self.self_play_workers = None
         self.test_worker = None
         self.training_worker = None
